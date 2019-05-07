@@ -65,5 +65,10 @@ This returns the core status from Asterisk as below:
      <-- {"jsonrpc": "2.0", "result": {"CoreStartupDate": "2019-05-04", "CoreReloadDate": "2019-05-04", "CoreStartupTime": "17:16:58", "CoreCurrentCalls": "0", "ActionID": "457740", "CoreReloadTime": "17:16:58"}, "id": 1} (200 OK)
 
 
+========
+Licenses
+========
+
+- Apache License 2.0
 
 
