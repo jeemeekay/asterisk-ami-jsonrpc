@@ -42,7 +42,7 @@ Running the Server
 
 =============================
 Python jsonrpc client example
-===========================
+=============================
 
 .. code:: python
 
