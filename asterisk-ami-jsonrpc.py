@@ -8,7 +8,6 @@ import time
 import json
 import uuid
 import signal
-from subprocess import check_output
 import logging
 import logging.handlers
 import sys, traceback
@@ -43,22 +42,6 @@ formatter = logging.Formatter('%(name)s: [%(created)f] %(levelname)s %(message)s
 handler.formatter = formatter
 ablogger.addHandler(handler)
 
-
-
-def get_pid(name):
-    return map(int,check_output(["pidof",name]).split())
-
-pythonpids = get_pid('python')
-for pidval in pythonpids:
-    if str(os.getpid()) == str(pidval): continue
-    fo = open('/proc/'+ str(pidval) + '/cmdline','r')
-    pidpath = fo.read()
-    fo.close()
-    #print 'process path: ',pidpath
-    if 'amiproxy' in pidpath:
-        ablogger.log(syslog_level,'amiproxy.py already running...exit ')
-        print 'amiproxy already running, exit'
-        sys.exit()
 
 
 ASTUSER = "admin"
@@ -361,6 +344,36 @@ def CoreStatus():
         response = {}
     return response
 
+
+@methods.add
+def AbsoluteTimeout(channel):
+    def cancel_wait(signum,frame):
+        raise Exception("AbsoluteTimeout Failed")
+    
+    signal.signal(signal.SIGALRM, cancel_wait) 
+    signal.alarm(2)  
+    try:
+        response = adapter.AbsoluteTimeout(Channel=channel,Timeout=timeout).response.keys['Value']
+        signal.alarm(0)
+    except Exception,e:
+        print 'absolutetimeout failed: ',e
+        response = ""
+    return response
+
+@methods.add
+def Hangup(channel):
+    def cancel_wait(signum,frame):
+        raise Exception("Hangup Failed")
+    
+    signal.signal(signal.SIGALRM, cancel_wait) 
+    signal.alarm(2)  
+    try:
+        response = adapter.Hangup(Channel=channel).response.keys['Value']
+        signal.alarm(0)
+    except Exception,e:
+        print 'hangup failed: ',e
+        response = ""
+    return response
             
 @methods.add
 def Getvar(channel,variable):
